@@ -1,0 +1,68 @@
+// Selected city
+city = input.City;
+
+// City coordinates map
+city_coords = Map();
+
+// Example: Istanbul
+ist = Map();
+ist.put("lat",41.0138);
+ist.put("lon",28.9497);
+city_coords.put("Istanbul",ist);
+
+// Example: Ankara
+ank = Map();
+ank.put("lat",39.9334);
+ank.put("lon",32.8597);
+city_coords.put("Ankara",ank);
+
+// Example: Balikesir
+bal = Map();
+bal.put("lat",39.6484);
+bal.put("lon",27.8826);
+city_coords.put("Balikesir",bal);
+
+// Get selected city's coordinates
+coords = city_coords.get(city);
+if(coords != null)
+{
+	latitude = coords.get("lat");
+	longitude = coords.get("lon");
+
+	input.Latitude = latitude;
+	input.Longitude = longitude;
+
+	api_url = "https://api.open-meteo.com/v1/forecast?latitude=" + latitude + "&longitude=" + longitude + "&hourly=temperature_2m&current_weather=true&timezone=auto";
+	resp = getUrl(api_url);
+	data = resp.toMap();
+	cw = data.get("current_weather");
+
+	if(cw != null)
+	{
+		input.Hour = cw.get("time");
+		input.Temperature = cw.get("temperature") + "°C";
+	}
+	else
+	{
+		hours = data.get("hourly").get("time");
+		temps = data.get("hourly").get("temperature_2m");
+		if(hours != null && temps != null && hours.size() > 0)
+		{
+			idx = hours.size() - 1;
+			input.Hour = hours.get(idx);
+			input.Temperature = temps.get(idx) + "°C";
+		}
+		else
+		{
+			input.Hour = "";
+			input.Temperature = "No Data";
+		}
+	}
+}
+else
+{
+	input.Latitude = "";
+	input.Longitude = "";
+	input.Hour = "";
+	input.Temperature = "";
+}
