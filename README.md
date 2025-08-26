@@ -1,4 +1,4 @@
-Weather Data Management System
+Weather Data Information System
 
 Project Overview
 
