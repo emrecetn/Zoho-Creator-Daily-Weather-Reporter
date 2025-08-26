@@ -1,0 +1,56 @@
+# Weather Data Information System Project
+
+## Overview
+This project automates the collection of weather data for predefined cities (Istanbul, Ankara, Balikesir) using the Open-Meteo API. It consists of two main components:  
+
+1. **Workflow** – Updates the weather information (temperature and timestamp) for a selected city whenever a user interacts with the form.  
+2. **Scheduled Function** – Automatically fetches daily weather data for all predefined cities and creates new records in the database.
+
+## Features
+- Dropdown selection for cities.  
+- Automatic fetching of current weather and local time.  
+- Stores Latitude and Longitude in dedicated fields.  
+- Scheduled daily updates create new records without duplicating previous entries.  
+- Handles API fallback: if current weather is unavailable, it retrieves the last available hourly data.  
+
+## Fields
+- `City` (Dropdown) – Predefined city names.  
+- `Latitude` (Single line) – Latitude coordinate of the city.  
+- `Longitude` (Single line) – Longitude coordinate of the city.  
+- `Hour` (Single line) – Timestamp of the weather data.  
+- `Temperature` (Single line) – Current temperature in Celsius.  
+
+## Workflow: `fetch_current_weather`
+**Purpose:** Fetches the latest weather data for the selected city and updates form fields.  
+
+**Logic:**  
+1. Retrieves the selected city.  
+2. Maps the city to its latitude and longitude.  
+3. Calls the Open-Meteo API with `current_weather=true` and `timezone=auto`.  
+4. Updates `Latitude`, `Longitude`, `Hour`, and `Temperature` fields in the form.  
+
+## Scheduled Function: `daily_weather_update`
+**Purpose:** Automatically creates daily records for all predefined cities using the latest weather data.  
+
+**Logic:**  
+1. Fetches existing city records.  
+2. Loops through each city, retrieves its coordinates.  
+3. Calls Open-Meteo API to get current weather.  
+4. Inserts a new record into the database with updated `Hour` and `Temperature`.  
+
+**Notes:**  
+- Only one new record per city per day is created.  
+- Ensures that previous day’s data is not duplicated.  
+
+## API Used
+- **Open-Meteo API** – Provides hourly weather forecasts and current weather data.  
+  - Endpoint example:  
+    ```
+    https://api.open-meteo.com/v1/forecast?latitude=41.0138&longitude=28.9497&hourly=temperature_2m&current_weather=true&timezone=auto
+    ```
+
+## How to Use
+1. Select a city from the dropdown in the form to immediately fetch current weather.  
+2. Scheduled function automatically updates daily weather data for all cities.  
+3. Review data in the database or reports section.
+
