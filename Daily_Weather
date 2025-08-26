@@ -1,0 +1,24 @@
+weatherRecords = Weather[ID != null];
+cityList = Map();
+for each  rec in weatherRecords
+{
+	cityList.put(rec.City,{rec.Latitude,rec.Longitude,rec.City});
+}
+for each  city in cityList
+{
+	lat = city.get(0);
+	lon = city.get(1);
+	api_url = "https://api.open-meteo.com/v1/forecast?latitude=" + lat + "&longitude=" + lon + "&hourly=temperature_2m&current_weather=true&timezone=auto";
+	resp = getUrl(api_url);
+	data = resp.toMap();
+	cw = data.get("current_weather");
+	response = insert into Weather
+	[
+		Added_User=zoho.loginuser
+		City=city.get(2)
+		Latitude=lat
+		Longitude=lon
+		Temperature=cw.get("temperature") + "°C"
+		Hour=cw.get("time")
+	];
+}
